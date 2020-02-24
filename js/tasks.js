@@ -23,8 +23,7 @@ window.ToDoList = {
             <td><a href="#" data-id=${task.id} class="delete-task">
                 <i class="fas fa-trash-alt"></i>
             </a></td>
-        </tr>
-`
+        </tr>`
     }
     };
 
