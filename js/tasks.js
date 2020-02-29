@@ -13,21 +13,53 @@ window.ToDoList = {
             ToDoList.displayTasks(JSON.parse(response));
         })
     },
-    getTaskRow: function (task) {
-        //spread operator (...)
-        let formattedDeadline =
-            new Date(...task.deadline).toLocaleDateString("ro");
-        //ternary operator
 
-        let  checkedAttribute = task.done? " checked": "";
+    createTask:function() {
+        let descriptionValue = $("#description-field").val();
+        let deadlineValue = $("#description-field").val();
 
-        //same result as with the ternary operator above
+        let requestBody = {
+            description: descriptionValue,
+            deadline: deadlineValue
+        };
+        $.ajax({
+            url: ToDoList,
+            method: "POST",
+            //also known as MIME type
+            contentType: ",application/json",
+            data: JSON.stringify(requestBody)
+        }).done(function () {
+            ToDoList.getTasks();
+        })
+    },
+    updateTask: function (id,done){
+        let requestBody = {
+            done: done
+        }
+            url:$.ajax({
+                url:ToDoList.API_BASE_URL + "?id=" + id,
+                method:"PUT",
+                contentType: "application/json",
+                data: JSON.stringify(requestBody)
+            })done(function() {
+        })
+    },
+
+        getTaskRow:function(task) {
+            //spread operator (...)
+            let formattedDeadline =
+                new Date(...task.deadline).toLocaleDateString("ro");
+            //ternary operator
+
+            let checkedAttribute = task.done ? " checked" : "";
+
+            //same result as with the ternary operator above
 //if (task.done){
 //checkedAttribute ="checked";
-  //  }else{
-     //   checkedAttribute = "";
+            //  }else{
+            //   checkedAttribute = "";
 //}
-        return `<tr>
+            return `<tr>
             <td>${task.description}</td>
             <td>${formattedDeadline}</td>
             <td><input type="checkbox" data-id=${task.id} class="mark-done" ${checkedAttribute}/></td>
@@ -35,17 +67,33 @@ window.ToDoList = {
                 <i class="fas fa-trash-alt"></i>
             </a></td>
         </tr>`
-    },
+        },
 
-    displayTasks: function (tasks) {
-        //weak-typed (javascript) vs strong tyoed (java)
+
+    displayTasks: function(tasks) {
+        //weak-typed (javascript) vs strong typed (java)
         var tableBody = '';
 
         tasks.forEach(task => tableBody += ToDoList.getTaskRow(task));
 
         $("#tasks-table tbody").html(tableBody);
 
-}
-    };
+    },
+        bindEvents: function() {
+            //capturing the "submit form's event to bind our function to it
+        },
+    $("#new-task-form").submit(function(event){
+        event.preventDefault();
+        ToDoList.createTask();
+    });
+    //delegate is necessary here because the element, mark-done is not present in the page from the beginning
+    $("#tasks-table").delegate(".mark-done", "change", function (event) {
+        event.preventDefault();
+        //reading value of attributes prefixed with "data"
+    let taskId = $(this).data("id");
+    let checked = $(this).is("checked");
+    ToDoList.updateTask();
+    })
 
-ToDoList.getTasks();
+    ToDoList.getTasks();
+    ToDoList.bindEvents();
