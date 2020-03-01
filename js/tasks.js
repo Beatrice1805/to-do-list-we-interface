@@ -14,6 +14,14 @@ window.ToDoList = {
         })
     },
 
+    deleteTask: function (id) {
+        $.ajax( {
+            url: ToDoList.API_BASE_URL+ "?id=" +id,
+            method: "DELETE"
+        }).done(function () {
+            ToDoList.getTasks();
+        })
+    },
     createTask:function() {
         let descriptionValue = $("#description-field").val();
         let deadlineValue = $("#description-field").val();
@@ -41,7 +49,7 @@ window.ToDoList = {
                 method:"PUT",
                 contentType: "application/json",
                 data: JSON.stringify(requestBody)
-            })done(function() {
+            }).done(function() {
         })
     },
 
@@ -82,7 +90,7 @@ window.ToDoList = {
         bindEvents: function() {
             //capturing the "submit form's event to bind our function to it
         },
-    $("#new-task-form").submit(function(event){
+        $"#new-task-form".submit(function(event){
         event.preventDefault();
         ToDoList.createTask();
     });
@@ -92,8 +100,15 @@ window.ToDoList = {
         //reading value of attributes prefixed with "data"
     let taskId = $(this).data("id");
     let checked = $(this).is("checked");
-    ToDoList.updateTask();
-    })
+    ToDoList.updateTask(taskId,checked);
+    });
+    $("#tasks-table")
+        .delegate(".delete-task", "click", function(event){
+        event.preventDefault();
+        let taskId = $(this).data("id");
+        ToDoList.deleteTask(taskId)
+
+})
 
     ToDoList.getTasks();
     ToDoList.bindEvents();
